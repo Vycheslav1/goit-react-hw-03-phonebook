@@ -10,7 +10,7 @@ import { Filter } from 'components/Filter/Filter.js';
 
 class PhoneBook extends Component {
   state = {
-    contacts: [],
+    contacts: JSON.parse(localStorage.getItem('phonebook')),
     filter: '',
     name: '',
     number: '',
@@ -23,10 +23,6 @@ class PhoneBook extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (this.state.contacts !== prevState.contacts) {
       localStorage.setItem('phonebook', JSON.stringify(this.items));
-    } else {
-      this.setState({
-        contacts: JSON.parse(localStorage.getItem('phonebook')),
-      });
     }
   }
 

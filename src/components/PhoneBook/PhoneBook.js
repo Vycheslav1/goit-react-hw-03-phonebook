@@ -22,7 +22,7 @@ class PhoneBook extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.contacts !== prevState.contacts) {
-      localStorage.setItem('phonebook', JSON.stringify(this.items));
+      this.items = JSON.parse(localStorage.getItem('phonebook'));
     }
   }
 
@@ -30,6 +30,7 @@ class PhoneBook extends Component {
     this.setState({
       contacts: this.items.splice(index, 1),
     });
+    localStorage.setItem('phonebook', JSON.stringify(this.items));
   };
 
   handleChange = id => {
@@ -58,6 +59,8 @@ class PhoneBook extends Component {
         contacts: this.items.splice(this.items.length, 0, element),
         number: document.getElementById(tl).value,
       });
+
+      localStorage.setItem('phonebook', JSON.stringify(this.items));
     }
 
     evt.target.reset();

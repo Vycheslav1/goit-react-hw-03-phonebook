@@ -8,6 +8,8 @@ import { ContactList } from 'components/ContactList/ContactList.js';
 
 import { Filter } from 'components/Filter/Filter.js';
 
+import { nanoid } from 'nanoid';
+
 class PhoneBook extends Component {
   state = {
     contacts: JSON.parse(localStorage.getItem('phonebook')),
@@ -16,75 +18,72 @@ class PhoneBook extends Component {
     number: '',
   };
 
-  changedItems;
-
-  items = JSON.parse(localStorage.getItem('phonebook'));
-
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.contacts !== prevState.contacts) {
-      this.items = JSON.parse(localStorage.getItem('phonebook'));
-    }
+    localStorage.setItem('phonebook', JSON.stringify(this.state.contacts));
   }
 
-  handleChangeList = index => {
-    this.setState({
-      contacts: this.items.splice(index, 1),
-    });
-    localStorage.setItem('phonebook', JSON.stringify(this.items));
-  };
-
-  handleChange = id => {
-    this.setState({
-      filter: document.getElementById(id).value,
-    });
-  };
-
-  handleSubmit = (evt, id, tl) => {
-    evt.preventDefault();
-    let skip = 0;
-    this.items.forEach(item => {
-      if (item.name === document.getElementById(id).value) {
-        alert(`${document.getElementById(id).value} is already in contacts`);
-        skip = 1;
+  handleChangeList = id => {
+    let i = 0;
+    this.setState(prev => {
+      i += 1;
+      if (i === 1) {
+        const index = prev.contacts.findIndex(contact => contact.id === id);
+        return prev.contacts.splice(index, 1);
       }
     });
-    if (skip === 0) {
+  };
+
+  handleChange = e => {
+    this.setState({
+      filter: e.target.value,
+    });
+  };
+
+  handleSubmit = evt => {
+    evt.preventDefault();
+    let i = 0;
+    let personId = nanoid();
+    if (
+      this.state.contacts.find(contact => contact.name === evt.target[0].value)
+    ) {
+      alert(`${evt.target[0].value} is already in contacts`);
+    } else {
       const element = {
-        id: 'id-' + (this.items.length + 1),
-        name: document.getElementById(id).value,
-        number: document.getElementById(tl).value,
+        id: personId,
+        name: evt.target[0].value,
+        number: evt.target[1].value,
       };
-
-      this.setState({
-        contacts: this.items.splice(this.items.length, 0, element),
-        number: document.getElementById(tl).value,
+      this.setState(prev => {
+        i += 1;
+        if (i === 1) {
+          return prev.contacts.push(element);
+        }
       });
-
-      localStorage.setItem('phonebook', JSON.stringify(this.items));
     }
 
     evt.target.reset();
   };
 
   render() {
-    this.changedItems = [...this.items];
-
-    if (this.state.filter !== '') {
-      this.changedItems = this.items.filter(item =>
-        item.name.includes(this.state.filter)
-      );
-    }
-
     return (
       <Div>
         <Title>Phonebook</Title>
         <ContactForm stateSubmit={this.handleSubmit} />
         <ContactsTitle>Contacts</ContactsTitle>
         <Filter changeState={this.handleChange} />
-        <ContactList
-          persons={this.changedItems}
-          changeList={this.handleChangeList}
-        />
+        {!this.state.filter ? (
+          <ContactList
+            persons={this.state.contacts}
+            changeList={this.handleChangeList}
+          />
+        ) : (
+          <ContactList
+            persons={this.state.contacts.filter(contact =>
+              contact.name.includes(this.state.filter)
+            )}
+            changeList={this.handleChangeList}
+          />
+        )}
       </Div>
     );
   }

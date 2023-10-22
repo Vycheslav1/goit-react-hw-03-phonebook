@@ -7,13 +7,13 @@ import { nanoid } from 'nanoid';
 const InputIdFilter = nanoid();
 
 const Filter = ({ changeState }) => (
-  <Label htmlFor={InputIdFilter}>
+  <Label>
     Find contacts by name
     <InputFilter
       id={InputIdFilter}
       type="text"
       name="filtration"
-      onInput={e => changeState(InputIdFilter)}
+      onInput={e => changeState(e)}
     />
   </Label>
 );

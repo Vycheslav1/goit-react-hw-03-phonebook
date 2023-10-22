@@ -12,7 +12,9 @@ import { nanoid } from 'nanoid';
 
 class PhoneBook extends Component {
   state = {
-    contacts: JSON.parse(localStorage.getItem('phonebook')),
+    contacts: JSON.parse(localStorage.getItem('phonebook'))
+      ? JSON.parse(localStorage.getItem('phonebook'))
+      : [],
     filter: '',
     name: '',
     number: '',
